@@ -1,7 +1,16 @@
 # github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
 github.com/cpuguy83/go-md2man/v2/md2man
-# github.com/diskfs/go-diskfs v0.0.0-20190910022921-fa9596b4c09d
+<<<<<<< HEAD
+<<<<<<< HEAD
+# github.com/diskfs/go-diskfs v0.0.0-20190910022921-fa9596b4c09d => github.com/luthermonson/go-diskfs v0.0.0-20190914212248-5b271ac2b6fd
+=======
+# github.com/diskfs/go-diskfs v0.0.0-20191027074631-8a029da77e0d
 github.com/diskfs/go-diskfs/filesystem/iso9660
+>>>>>>> add5b06... goreleaser
+=======
+# github.com/diskfs/go-diskfs v0.0.0-20191115120903-6cf046d472d7
+github.com/diskfs/go-diskfs/filesystem/iso9660
+>>>>>>> 5dd1f16... vendor
 github.com/diskfs/go-diskfs/filesystem
 github.com/diskfs/go-diskfs/partition/mbr
 github.com/diskfs/go-diskfs/util
@@ -11,3 +20,5 @@ github.com/russross/blackfriday/v2
 github.com/shurcooL/sanitized_anchor_name
 # github.com/urfave/cli v1.22.1
 github.com/urfave/cli
+# gopkg.in/djherbis/times.v1 v1.2.0
+gopkg.in/djherbis/times.v1

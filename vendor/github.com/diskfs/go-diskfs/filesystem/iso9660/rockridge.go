@@ -5,8 +5,16 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	//"syscall"
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	"syscall"
+>>>>>>> add5b06... goreleaser
+=======
+>>>>>>> 5dd1f16... vendor
 	"time"
+
+	"gopkg.in/djherbis/times.v1"
 )
 
 const (
@@ -103,22 +111,44 @@ func (r rockRidgeExtension) GetFileExtensions(fp string, isSelf, isParent bool) 
 	if err != nil {
 		return nil, fmt.Errorf("Error reading file %s: %v", fp, err)
 	}
+
+	t, err := times.Lstat(fp)
+	if err != nil {
+		return nil, fmt.Errorf("Error reading times %s: %v", fp, err)
+	}
+
 	// PX
-	nlink := uint32(0)
-	uid := uint32(0)
-	gid := uint32(0)
+	nlink, uid, gid := statt(fi)
 	mtime := fi.ModTime()
+<<<<<<< HEAD
+<<<<<<< HEAD
 	// as a fallback, just use the modtime
 	atime := mtime
 	ctime := mtime
+	//if sys := fi.Sys(); sys != nil {
+	//	if stat, ok := sys.(*syscall.Stat_t); ok {
+	//		nlink = uint32(stat.Nlink)
+	//		uid = uint32(stat.Uid)
+	//		gid = uint32(stat.Gid)
+	//		ctime, atime = getFileTimes(stat)
+	//	}
+	//}
+=======
+	atime := t.AccessTime()
+	ctime := t.ChangeTime()
 	if sys := fi.Sys(); sys != nil {
-		//if stat, ok := sys.(*syscall.Stat_t); ok {
-		//	nlink = uint32(stat.Nlink)
-		//	uid = uint32(stat.Uid)
-		//	gid = uint32(stat.Gid)
-		//	//ctime, atime = getFileTimes(stat)
-		//}
+		if stat, ok := sys.(*syscall.Stat_t); ok {
+			nlink = uint32(stat.Nlink)
+			uid = uint32(stat.Uid)
+			gid = uint32(stat.Gid)
+		}
 	}
+>>>>>>> add5b06... goreleaser
+=======
+	atime := t.AccessTime()
+	ctime := t.ChangeTime()
+
+>>>>>>> 5dd1f16... vendor
 	ret = append(ret, rockRidgePosixAttributes{
 		mode:      fi.Mode(),
 		linkCount: nlink,
