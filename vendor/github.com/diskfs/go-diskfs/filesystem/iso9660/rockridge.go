@@ -5,13 +5,6 @@ import (
 	"fmt"
 	"os"
 	"sort"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	"syscall"
->>>>>>> add5b06... goreleaser
-=======
->>>>>>> 5dd1f16... vendor
 	"time"
 
 	"gopkg.in/djherbis/times.v1"
@@ -120,35 +113,9 @@ func (r rockRidgeExtension) GetFileExtensions(fp string, isSelf, isParent bool) 
 	// PX
 	nlink, uid, gid := statt(fi)
 	mtime := fi.ModTime()
-<<<<<<< HEAD
-<<<<<<< HEAD
-	// as a fallback, just use the modtime
-	atime := mtime
-	ctime := mtime
-	//if sys := fi.Sys(); sys != nil {
-	//	if stat, ok := sys.(*syscall.Stat_t); ok {
-	//		nlink = uint32(stat.Nlink)
-	//		uid = uint32(stat.Uid)
-	//		gid = uint32(stat.Gid)
-	//		ctime, atime = getFileTimes(stat)
-	//	}
-	//}
-=======
-	atime := t.AccessTime()
-	ctime := t.ChangeTime()
-	if sys := fi.Sys(); sys != nil {
-		if stat, ok := sys.(*syscall.Stat_t); ok {
-			nlink = uint32(stat.Nlink)
-			uid = uint32(stat.Uid)
-			gid = uint32(stat.Gid)
-		}
-	}
->>>>>>> add5b06... goreleaser
-=======
 	atime := t.AccessTime()
 	ctime := t.ChangeTime()
 
->>>>>>> 5dd1f16... vendor
 	ret = append(ret, rockRidgePosixAttributes{
 		mode:      fi.Mode(),
 		linkCount: nlink,
