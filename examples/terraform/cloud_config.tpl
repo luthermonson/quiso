@@ -4,7 +4,7 @@ packages:
  - redis
  - mysql-server
 users:
- - name: luther
+ - name: ${username}
    sudo: ALL=(ALL) NOPASSWD:ALL
 logcfg: |
  [loggers]
