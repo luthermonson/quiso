@@ -1,0 +1,30 @@
+#cloud-config
+package_update: true
+packages:
+ - redis
+ - mysql-server
+users:
+ - name: ${username}
+   sudo: ALL=(ALL) NOPASSWD:ALL
+logcfg: |
+ [loggers]
+ keys=root,cloudinit
+ [handlers]
+ keys=ch,cf
+ [formatters]
+ keys=
+ [logger_root]
+ level=DEBUG
+ handlers=
+ [logger_cloudinit]
+ level=DEBUG
+ qualname=cloudinit
+ handlers=ch,cf
+ [handler_ch]
+ class=StreamHandler
+ level=DEBUG
+ args=(sys.stderr,)
+ [handler_cf]
+ class=FileHandler
+ level=DEBUG
+ args=('/tmp/cloud-init-debug.log',)

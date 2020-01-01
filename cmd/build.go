@@ -1,13 +1,13 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/diskfs/go-diskfs/filesystem/iso9660"
-	"github.com/urfave/cli"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -30,35 +30,105 @@ var possibleMetaDataFiles = []string{
 	"meta-data",
 }
 
-func BuildCommand() cli.Command {
-	return cli.Command{
+func BuildCommand() *cli.Command {
+	return &cli.Command{
 		Name:    "build",
 		Aliases: []string{"b"},
 		Usage:   "",
-		Action:  build,
+		Action:  Build,
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "user-data, u",
-				Value: "",
-				Usage: "File containing User Data",
+			&cli.StringFlag{
+				Name:    "user-data",
+				Aliases: []string{"u"},
+				Value:   "",
+				Usage:   "File containing User Data",
 			},
-			cli.StringFlag{
-				Name:  "meta-data, m",
-				Value: "",
-				Usage: "File containing Meta Data",
+			&cli.StringFlag{
+				Name:    "meta-data",
+				Aliases: []string{"m"},
+				Value:   "",
+				Usage:   "File containing Meta Data",
 			},
-			cli.StringFlag{
-				Name:  "output, o",
-				Value: defaultOutput,
-				Usage: "File to output final ISO file",
+			&cli.StringFlag{
+				Name:    "output",
+				Aliases: []string{"o"},
+				Value:   defaultOutput,
+				Usage:   "File to output final ISO file",
 			},
 		},
 	}
 }
 
-func build(c *cli.Context) error {
+func Build(c *cli.Context) error {
 	userdata, metadata, output := getInputs(c)
 
+	if userdata == "" {
+		fmt.Errorf("no user data input, please specify a file with --user-data")
+	}
+
+	if userdata == "" {
+		fmt.Errorf("no user data input, please specify a file with --user-data")
+	}
+
+	return buildIso(userdata, metadata, output)
+}
+
+func getInputs(c *cli.Context) (userdata, metadata, output string) {
+	userdata = c.String("user-data")
+	if userdata == "" {
+		logrus.Debug("No --user-data param, checking for defaults")
+		for _, ud := range possibleUserDataFiles {
+			logrus.Debugf("Checking for %s", ud)
+			if fileExists(ud) {
+				logrus.Debugf("Found user data file: %s", ud)
+				userdata = ud
+				break
+			}
+		}
+	}
+	logrus.Debugf("User data input: %s", userdata)
+	if !fileExists(userdata) {
+		logrus.Debugf("User data file does not exist: %s", userdata)
+		userdata = ""
+	}
+
+	metadata = c.String("meta-data")
+	if metadata == "" {
+		logrus.Debug("No --meta-data param, checking for defaults")
+		for _, md := range possibleMetaDataFiles {
+			logrus.Debugf("Checking for %s", md)
+			if fileExists(md) {
+				logrus.Debugf("Found user data file: %s", md)
+				metadata = md
+				break
+			}
+		}
+	}
+	logrus.Debugf("Meta data input: %s", metadata)
+	if !fileExists(metadata) {
+		logrus.Debugf("Meta data file does not exist: %s", metadata)
+		metadata = ""
+	}
+
+	output = c.String("output")
+	if output == "" {
+		// fail safe if run as default action
+		output = defaultOutput
+	}
+	logrus.Debugf("Output ISO: %s", output)
+
+	return
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+func buildIso(userdata, metadata, output string) error {
 	perm := os.FileMode(fileMode)
 	iso, err := os.OpenFile(output, os.O_CREATE|os.O_RDWR, perm)
 	if err != nil {
@@ -93,42 +163,6 @@ func build(c *cli.Context) error {
 		return err
 	}
 
+	logrus.Infof("Cloud init ISO created: %s", output)
 	return nil
-}
-
-func getInputs(c *cli.Context) (userdata, metadata, output string) {
-	userdata = c.String("user-data")
-	if userdata == "" {
-		for _, ud := range possibleUserDataFiles {
-			if fileExists(ud) {
-				userdata = ud
-				break
-			}
-		}
-	}
-	logrus.Debugf("User data input: %s", userdata)
-
-	metadata = c.String("meta-data")
-	if metadata == "" {
-		for _, md := range possibleMetaDataFiles {
-			if fileExists(md) {
-				metadata = md
-				break
-			}
-		}
-	}
-	logrus.Debugf("Meta data input: %s", metadata)
-
-	output = c.String("output")
-	logrus.Debugf("Output ISO: %s", output)
-
-	return
-}
-
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
 }

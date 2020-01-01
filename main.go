@@ -2,42 +2,44 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/luthermonson/quiso/cmd"
-	"github.com/urfave/cli"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "quiso"
-	app.Usage = "Quick CloudInit ISOs"
-	app.Commands = cmd.Commands()
-	app.Before = func(ctx *cli.Context) error {
-		if ctx.GlobalBool("debug") {
-			logrus.SetLevel(logrus.DebugLevel)
-		}
-		if ctx.GlobalBool("quiet") {
-			logrus.SetOutput(ioutil.Discard)
-		}
-		return nil
-	}
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:  "debug, d",
-			Usage: "Turn on verbose debug logging",
+	app := &cli.App{
+		Name:     "quiso",
+		Usage:    "Quick CloudInit ISOs",
+		Action:   cmd.Build,
+		Commands: cmd.Commands(),
+		Before: func(ctx *cli.Context) error {
+			if ctx.Bool("debug") {
+				logrus.SetLevel(logrus.DebugLevel)
+			}
+			if ctx.Bool("quiet") {
+				logrus.SetOutput(ioutil.Discard)
+			}
+			return nil
 		},
-		cli.BoolFlag{
-			Name:  "quiet, q",
-			Usage: "Turn on off all logging",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "debug",
+				Aliases: []string{"d"},
+				Usage:   "Turn on verbose debug logging",
+			},
+			&cli.BoolFlag{
+				Name:    "quiet",
+				Aliases: []string{"q"},
+				Usage:   "Turn on off all logging",
+			},
 		},
 	}
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }
