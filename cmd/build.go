@@ -136,7 +136,7 @@ func buildIso(userdata, metadata, output string) error {
 	}
 	defer iso.Close()
 
-	fs, err := iso9660.Create(iso, 0, 0, blockSize)
+	fs, err := iso9660.Create(iso, 0, 0, blockSize, "")
 	fs.Mkdir("/")
 	if err != nil {
 		return err
